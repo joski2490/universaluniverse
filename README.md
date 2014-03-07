@@ -20,7 +20,7 @@ Which will serve a page at http://localhost:9999/ containing the Universe Simula
 If you wish to get fancy about where it serves from, you can run:
 ```$ node UniversalUniverseSimulator.js -p 6000```
 
-Which will serve a page at http://localhost:6000/ for your viewing pleasure.
+Which will serve a page at http://localhost:6000/ for your viewing pleasure.  If you click on the universe box, the planets even spin!  Reload for more random universes.
 
 ## Unit Testing
 
