@@ -1,5 +1,4 @@
 # Universal Universe
-=================
 
 Copyright (c) 2014 Steven Velozo
 
