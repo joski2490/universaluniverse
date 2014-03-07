@@ -13,7 +13,8 @@
     "bigdecimal": "^0.6.1",
     "requirejs": "^2.1.11",
     "connect": "^2.14.1",
-    "serve-static": "^1.0.2"
+    "serve-static": "^1.0.2",
+    "minimist": "0.0.8"
   },
   "devDependencies": {
     "mocha": "^1.17.1",
