@@ -20,6 +20,10 @@ var Rename = require('gulp-rename');
 var Clean = require('gulp-clean');
 var Concat = require('gulp-concat');
 var Exec = require('gulp-exec');
+var Nodemon = require('gulp-nodemon');
+
+// Underscore for Map functions and templating
+var _JS = require('underscore');
 
 
 
@@ -31,6 +35,7 @@ var Exec = require('gulp-exec');
  * Magic Paths Global
  */
 var Path = {};
+Path.Application = './UniversalUniverseSimulator.js';
 Path.Tests = {Mocha: './test/*.js'};
 Path.Build =
 	{
@@ -52,21 +57,24 @@ Path.Dependencies.Output =
 		ocanvas: 'js/ocanvas.js',
 		require: 'js/require.js',
 		underscore: 'js/underscore.js',
-		pure: 'css/pure.css'
+		pure: 'css/pure.css',
+		jquery: 'js/jquery.js'
 	}
 Path.Dependencies.Input =
 	{
 		ocanvas: Path.Dependencies.Source + 'ocanvas/ocanvas-2.6.0.min.js',
 		require: Path.Dependencies.Source + 'requirejs/require-2.1.11.min.js',
 		underscore: Path.Dependencies.Source + 'underscore/underscore-min.js',
-		pure: Path.Dependencies.Source + 'pure/pure-min.css'
+		pure: Path.Dependencies.Source + 'pure/pure-min.css',
+		jquery: Path.Dependencies.Source + 'jquery/jquery-2.1.0.min.js'
 	}
 Path.Dependencies.InputDebug =
 	{
 		ocanvas: Path.Dependencies.Source + 'ocanvas/ocanvas-2.6.0.js',
 		require: Path.Dependencies.Source + 'requirejs/require-2.1.11.js',
 		underscore: Path.Dependencies.Source + 'underscore/underscore.js',
-		pure: Path.Dependencies.Source + 'pure/pure.css'
+		pure: Path.Dependencies.Source + 'pure/pure.css',
+		jquery: Path.Dependencies.Source + 'jquery/jquery-2.1.0.js'
 	}
 Path.Site =
 	{
@@ -80,10 +88,52 @@ Path.CSS =
 	}
 Path.Assets =
 	{
-		Compiled: './assets/compiled/**/*.*',
+		Source: './assets/',
 		Destination: Path.Build.Destination + 'assets/'
 	}
+Path.Assets.Output =
+	{
+		fonts: 'fonts',
+		icons: 'icons'
+	}
+Path.Assets.Input =
+	{
+		fonts: Path.Assets.Source + 'fonts/**/*.*',
+		icons: Path.Assets.Source + 'icons/UniversalUniverse/staged/**/*.*',
+	}
 
+
+
+////////////////////////////////////////////////////////////////////
+//////////////////////// Run the Application ////////////////////////
+//================================================================//
+
+/********************************************************
+ * TASK: Run the server, use nodemon to reload on change
+ */
+Gulp.task
+(
+	'run',
+	function ()
+	{
+		Nodemon
+		(
+			{
+				script: Path.Application,
+				ext: 'js'
+			}
+		)
+		.on('change', ['lint'])
+		.on
+		(
+			'restart',
+			function ()
+			{
+				console.log('The Node server has restarted!');
+			}
+		)
+	}
+);
 
 
 
@@ -116,10 +166,7 @@ Gulp.task
 				'error',
 				function()
 				{
-					if (!/tests? failed/.test(err.stack))
-					{
-						console.log(err.stack);
-					}
+					console.log('Something blew up during unit tests.');
 				}
 			);
 	}
@@ -149,7 +196,7 @@ Gulp.task
 				'error',
 				function()
 				{
-					console.log('Something blew up.');
+					console.log('Something blew up during unit tests.');
 				}
 			);
 	}
@@ -208,7 +255,7 @@ Gulp.task
 //================================================================//
 
 /********************************************************
- * TASK: Compile CSS with the less compiler
+ * TASK: Compile CSS with the less compiler and minify
  */
 Gulp.task
 (
@@ -216,8 +263,50 @@ Gulp.task
 	function ()
 	{
 		var Less = require('gulp-less');
+		var MinifyCSS = require('gulp-minify-css')
 		Gulp.src(Path.CSS.Source)
 			.pipe(Less())
+			.pipe(MinifyCSS
+					(
+					{
+						// * for keeping all (default), 1 for keeping first one, 0 for removing all
+						keepSpecialComments: 1,
+						keepBreaks: false,
+						removeEmpty: true,
+						debug: false
+					}
+					))
+			.on
+			(
+				'error',
+				function()
+				{
+					console.log('Something blew up during Less CSS compilation.');
+				}
+			)
+			.pipe(Gulp.dest(Path.CSS.Destination));
+	}
+);
+
+/********************************************************
+ * TASK: Compile CSS with the less compiler
+ */
+Gulp.task
+(
+	'less-debug',
+	function ()
+	{
+		var Less = require('gulp-less');
+		Gulp.src(Path.CSS.Source)
+			.pipe(Less())
+		.on
+			(
+				'error',
+				function()
+				{
+					console.log('Something blew up during Less CSS compilation.');
+				}
+			)
 			.pipe(Gulp.dest(Path.CSS.Destination));
 	}
 );
@@ -230,7 +319,24 @@ Gulp.task
 	'site-copy',
 	function ()
 	{
+		var Template = require('gulp-template');
 		Gulp.src(Path.Site.Source)
+			.pipe(Template({ Debug: false }))
+			.pipe(Gulp.dest(Path.Site.Destination));
+	}
+);
+
+/********************************************************
+ * TASK: Copy the Site (HTML)
+ */
+Gulp.task
+(
+	'site-copy-debug',
+	function ()
+	{
+		var Template = require('gulp-template');
+		Gulp.src(Path.Site.Source)
+			.pipe(Template({ Debug: true }))
 			.pipe(Gulp.dest(Path.Site.Destination));
 	}
 );
@@ -243,8 +349,14 @@ Gulp.task
 	'asset-copy',
 	function ()
 	{
-		Gulp.src(Path.Assets.Compiled)
-			.pipe(Gulp.dest(Path.Assets.Destination));
+		// Basic sentence: ForEach ASSET_TO_OUTPUT Copy ASSET_SOURCE While Renaming to ASSET_OUTPUT_NAME
+		for (var tmpAssetName in Path.Assets.Output)
+			if (typeof(Path.Assets.Input[tmpAssetName]) === 'undefined')
+				// Show a message maybe that this asset isn't supported.
+				console.log('Asset '+tmpAssetName+' is in list of expected outputs without a valid input.');
+			else
+				Gulp.src(Path.Assets.Input[tmpAssetName])
+					.pipe(Gulp.dest(Path.Assets.Destination + Path.Assets.Output[tmpAssetName]));
 	}
 );
 
@@ -262,9 +374,11 @@ Gulp.task
 				// Show a message maybe that this dependency isn't supported.
 				console.log('Dependency '+tmpDependencyName+' is in list of expected outputs without a valid input.');
 			else
-				Gulp.src(Path.Dependencies.Input[tmpDependencyName])
-					.pipe(Rename(Path.Dependencies.Output[tmpDependencyName]))
-					.pipe(Gulp.dest(Path.Dependencies.Destination));
+				// This allows us to skip dependencies that are debug only.
+				if (Path.Dependencies.Input[tmpDependencyName])
+					Gulp.src(Path.Dependencies.Input[tmpDependencyName])
+						.pipe(Rename(Path.Dependencies.Output[tmpDependencyName]))
+						.pipe(Gulp.dest(Path.Dependencies.Destination));
 	}
 );
 
@@ -284,9 +398,11 @@ Gulp.task
 				// Show a message maybe that this dependency isn't supported.
 				console.log('Dependency '+tmpDependencyName+' is in list of expected outputs without a valid debug input.');
 			else
-				Gulp.src(Path.Dependencies.InputDebug[tmpDependencyName])
-					.pipe(Rename(Path.Dependencies.Output[tmpDependencyName]))
-					.pipe(Gulp.dest(Path.Dependencies.Destination));
+				// This allows us to skip dependencies that are release only.
+				if (Path.Dependencies.InputDebug[tmpDependencyName])
+					Gulp.src(Path.Dependencies.InputDebug[tmpDependencyName])
+						.pipe(Rename(Path.Dependencies.Output[tmpDependencyName]))
+						.pipe(Gulp.dest(Path.Dependencies.Destination));
 	}
 );
 
@@ -381,7 +497,7 @@ Gulp.task
 Gulp.task
 (
 	'build-debug',
-	['less', 'site-copy', 'asset-copy', 'dependencies-debug', 'scriptcompile-debug']
+	['less-debug', 'site-copy-debug', 'asset-copy', 'dependencies-debug', 'scriptcompile-debug']
 );
 
 
@@ -444,3 +560,58 @@ Gulp.task
 		Gulp.watch(Path.Scripts.Source, ['scriptcompile-debug']);
 	}
 );
+
+/********************************************************
+ * TASK: Auto build the site/assets on save and livereload
+ */
+Gulp.task
+(
+	'watch-livesite',
+	function()
+	{
+		var tmpAssetPathArray = _JS.map
+		(
+			Path.Assets.Input,
+			function (pValue, pKey, pList)
+			{
+				return [pValue];
+			}
+		);
+		var tmpSitePath = tmpAssetPathArray.concat([Path.CSS.Source, Path.Site.Source]);
+		Gulp.watch(tmpSitePath, ['less-debug', 'site-copy-debug', 'asset-copy']);
+	}
+);
+
+Gulp.task
+(
+	'watch-livereload',
+	function()
+	{
+		var LiveReload = require('gulp-livereload');
+		var LiveReloadServer = LiveReload();
+		Gulp.watch('build/**')
+			.on
+			(
+				'change',
+				function(pFile)
+				{
+					LiveReloadServer.changed(pFile.path);
+				}
+			);
+	}
+);
+
+////////////////////////////////////////////////////////////////////
+////////////////////////   WATCHERS META    ////////////////////////
+//================================================================//
+
+/********************************************************
+ * TASK: Do all the copying and magic when files change
+ */
+Gulp.task
+(
+	'develop',
+	['watch-scriptcompile-debug', 'watch-livesite', 'watch-livereload', 'run']
+);
+
+

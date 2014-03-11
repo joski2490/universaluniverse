@@ -5,19 +5,59 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="description" content="A layout example that shows off a responsive email layout.">
 
-		<title>The Universal Universe &ndash; Web Simulator</title>
+		<title>The Universal Universe - A Galaxy Simulator</title>
 
-		<!-- This line uses the Yahoo CDN
+		<!-- This line uses the Yahoo CDN for pure, if you please.
 		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.4.2/pure.css">
 		-->
 		<link rel="stylesheet" type="text/css" href="dependencies/css/pure.css"/>
 		<link rel="stylesheet" type="text/css" href="css/UniversalUniverse.css"/>
 
+		<!-- http://icomoon.io/ custom icon set -->
+		<link rel="stylesheet" type="text/css" href="assets/icons/UniversalUniverseIcons.css"/>
+
 		<script data-main="scripts/Application" src="dependencies/js/require.js"></script>
+		<script data-main="scripts/Application" src="dependencies/js/jquery.js"></script>
+		<script data-main="scripts/Application" src="dependencies/js/underscore.js"></script>
 		<script src="dependencies/js/ocanvas.js"></script>
 	</head>
 	<body>
-		<h1>The Universal Universe<sub>(tm)</sub></h1>
-		<canvas id="canvasUniverse" width="800" height="800"></canvas>
+		<div id="UULayout" class="content pure-g">
+			<div id="UUNavigation" class="pure-u">
+				<a href="#" id="MenuToggle" class="nav-menu-button pure-button"><span class="icon-menu"></span></a>
+				<div class="nav-inner">
+					<div class="pure-menu pure-menu-open">
+						<ul>
+							<li class="pure-menu-heading">Main</li>
+							<li><a class="active" href="#">View</a></li>
+							<li><a href="#">Parameters</a></li>
+							<li><a href="#">Log</a></li>
+							<li class="pure-menu-heading">Utilities</li>
+							<li><a href="#">Randomize!</a></li>
+							<li><a href="#">Textures</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<div id="UUUniverse" class="pure-u-1">
+				<div class="UniverseDisplay">
+					<h1>The Universal Universe</h1>
+					<canvas id="UUCanvasUniverse" width="800" height="800"></canvas>
+				</div>
+			</div>
+		</div>
+		<script>
+			// Setting the active class name expands the menu vertically on mobile screens.
+			$('#MenuToggle').on
+			(
+				'click',
+				function (e)
+				{
+					$('#UUNavigation').toggleClass('active');
+					$(this).toggleClass('pure-button-active');
+				}
+			);
+		</script>
 	</body>
 </html>

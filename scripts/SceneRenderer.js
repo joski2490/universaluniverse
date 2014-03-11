@@ -21,7 +21,7 @@ define
 		function initializeRenderer()
 		{
 			// TODO: Split this up into Graphics Context management, Universe Generation and Renderer setup.
-			var tmpCanvas = oCanvas.create({ canvas: "#canvasUniverse", background: "#000" });
+			var tmpCanvas = oCanvas.create({ canvas: "#UUCanvasUniverse", background: "#000" });
 			var tmpXOrigin = tmpCanvas.width / 2;
 			var tmpYOrigin = tmpCanvas.height / 2;
 
