@@ -58,7 +58,8 @@ Path.Dependencies.Output =
 		require: 'js/require.js',
 		underscore: 'js/underscore.js',
 		pure: 'css/pure.css',
-		jquery: 'js/jquery.js'
+		jquery: 'js/jquery.js',
+		backbone: 'js/backbone.js'
 	}
 Path.Dependencies.Input =
 	{
@@ -66,7 +67,8 @@ Path.Dependencies.Input =
 		require: Path.Dependencies.Source + 'requirejs/require-2.1.11.min.js',
 		underscore: Path.Dependencies.Source + 'underscore/underscore-min.js',
 		pure: Path.Dependencies.Source + 'pure/pure-min.css',
-		jquery: Path.Dependencies.Source + 'jquery/jquery-2.1.0.min.js'
+		jquery: Path.Dependencies.Source + 'jquery/jquery-2.1.0.min.js',
+		backbone: Path.Dependencies.Source + 'backbone/backbone-min.js'
 	}
 Path.Dependencies.InputDebug =
 	{
@@ -74,7 +76,8 @@ Path.Dependencies.InputDebug =
 		require: Path.Dependencies.Source + 'requirejs/require-2.1.11.js',
 		underscore: Path.Dependencies.Source + 'underscore/underscore.js',
 		pure: Path.Dependencies.Source + 'pure/pure.css',
-		jquery: Path.Dependencies.Source + 'jquery/jquery-2.1.0.js'
+		jquery: Path.Dependencies.Source + 'jquery/jquery-2.1.0.js',
+		backbone: Path.Dependencies.Source + 'backbone/backbone.js'
 	}
 Path.Site =
 	{
@@ -85,22 +88,30 @@ Path.CSS =
 	{
 		Source: './less/**/*.less',
 		Destination: Path.Build.Destination + 'css/'
-	}
+	};
+Path.Icons =
+	{
+		Source: './assets/icons/'
+	};
+Path.Icons.File = Path.Icons.Source + 'style.css';
+Path.Icons.Destination = Path.Icons.Source + 'staged/';
+Path.Icons.Font = Path.Icons.Source + 'fonts/*.*';
+Path.Icons.FontDestination = Path.Icons.Destination + 'fonts/';
 Path.Assets =
 	{
 		Source: './assets/',
 		Destination: Path.Build.Destination + 'assets/'
-	}
+	};
 Path.Assets.Output =
 	{
 		fonts: 'fonts',
 		icons: 'icons'
-	}
+	};
 Path.Assets.Input =
 	{
 		fonts: Path.Assets.Source + 'fonts/**/*.*',
-		icons: Path.Assets.Source + 'icons/UniversalUniverse/staged/**/*.*',
-	}
+		icons: Path.Assets.Source + 'icons/staged/**/*.*',
+	};
 
 
 
@@ -327,7 +338,7 @@ Gulp.task
 );
 
 /********************************************************
- * TASK: Copy the Site (HTML)
+ * TASK: Copy the Site (HTML) in debug mode
  */
 Gulp.task
 (
@@ -338,6 +349,21 @@ Gulp.task
 		Gulp.src(Path.Site.Source)
 			.pipe(Template({ Debug: true }))
 			.pipe(Gulp.dest(Path.Site.Destination));
+	}
+);
+
+/********************************************************
+ * TASK: Stage the icons
+ */
+Gulp.task
+(
+	'icons-stage',
+	function ()
+	{
+		Gulp.src(Path.Icons.File)
+			.pipe(Gulp.dest(Path.Icons.Destination));
+		Gulp.src(Path.Icons.Font)
+			.pipe(Gulp.dest(Path.Icons.FontDestination));
 	}
 );
 

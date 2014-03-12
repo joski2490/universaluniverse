@@ -19,6 +19,7 @@ define
 		{
 			Suns: [],
 			Planets: [],
+			TimeUnitsPerYear: 1000,
 			Time: 0
 		});
 
@@ -52,10 +53,24 @@ define
 			set: function(pPlanets) { _Options.Planets = pPlanets; }
 		});
 
+		////////// Temporal Properties //////////
 		Object.defineProperty(oUniversalUniverse, 'Time',
 		{
 			get: function() { return _Options.Time; },
 			set: function(pTime) { _Options.Time = pTime; }
+		});
+		Object.defineProperty(oUniversalUniverse, 'TimeUnitsPerYear',
+		{
+			get: function() { return _Options.TimeUnitsPerYear; },
+			set: function(pTimeUnitsPerYear) { _Options.TimeUnitsPerYear = pTimeUnitsPerYear; }
+		});
+		Object.defineProperty(oUniversalUniverse, 'TimeCurrentYear',
+		{
+			get: function() { return Math.floor(_Options.Time / _Options.TimeUnitsPerYear); }
+		});
+		Object.defineProperty(oUniversalUniverse, 'TimeCurrentDay',
+		{
+			get: function() { return _Options.Time % _Options.TimeUnitsPerYear; }
 		});
 
 		return oUniversalUniverse;

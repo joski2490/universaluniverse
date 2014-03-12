@@ -8,11 +8,19 @@
 *
 * @description Main application.
 */
-require
+if (typeof define !== 'function') { var define = require('amdefine')(module); }
+
+define
 (
-	["SceneRenderer"],
-	function(SceneRenderer)
+	["SceneRenderer", "ApplicationRoutes"],
+	function(SceneRenderer, ApplicationRoutes)
 	{
-		SceneRenderer.InitializeRenderer();
+		// Initialize the rendering pipeline.
+		// This should only happen once per page load, and is tied directly to the routes.
+		var _SceneRenderer = SceneRenderer.New();
+		_SceneRenderer.InitializeRenderer();
+
+		// Setup the application router, which also holds the global state object.
+		ApplicationRoutes.Initialize(_SceneRenderer);
 	}
 );

@@ -14,12 +14,12 @@
 		<link rel="stylesheet" type="text/css" href="css/UniversalUniverse.css"/>
 
 		<!-- http://icomoon.io/ custom icon set -->
-		<link rel="stylesheet" type="text/css" href="assets/icons/UniversalUniverseIcons.css"/>
+		<link rel="stylesheet" type="text/css" href="assets/icons/style.css"/>
 
-		<script data-main="scripts/Application" src="dependencies/js/require.js"></script>
-		<script data-main="scripts/Application" src="dependencies/js/jquery.js"></script>
-		<script data-main="scripts/Application" src="dependencies/js/underscore.js"></script>
-		<script src="dependencies/js/ocanvas.js"></script>
+		<script type="text/javascript" src="dependencies/js/jquery.js"></script>
+		<script type="text/javascript" src="dependencies/js/underscore.js"></script>
+		<script type="text/javascript" src="dependencies/js/backbone.js"></script>
+		<script type="text/javascript" src="dependencies/js/ocanvas.js"></script>
 <%
 	// Only include the following if the build is in debug mode.
 	// TODO: It hard-codes localhost which I am meh about.
@@ -29,44 +29,94 @@
 		<script src="http://localhost:35729/livereload.js?snipver=1"></script>
 <%
 	}
-%>	</head>
+%>
+		<script type="text/javascript" data-main="scripts/Application" src="dependencies/js/require.js"></script>
+	</head>
 	<body>
 		<div id="UULayout" class="content pure-g">
 			<div id="UUNavigation" class="pure-u">
 				<a href="#" id="MenuToggle" class="nav-menu-button pure-button"><span class="icon-menu"></span></a>
-				<div class="nav-inner">
+				<div class="UUNavigationMenu">
 					<div class="pure-menu pure-menu-open">
 						<ul>
 							<li class="pure-menu-heading">Main</li>
-							<li><a class="active" href="#">View</a></li>
-							<li><a href="#">Parameters</a></li>
-							<li><a href="#">Log</a></li>
+							<li><a href="#orrery" data-tab="UUUniverse" class="active" attr=""><span class="icon-earth"></span> Orrery</a></li>
+							<li><a href="#data" data-tab="UUData"><span class="icon-bars"></span> Data</a></li>
+							<li><a href="#log" data-tab="UULog"><span class="icon-wrench"></span> Log</a></li>
 							<li class="pure-menu-heading">Utilities</li>
-							<li><a href="#">Randomize!</a></li>
-							<li><a href="#">Textures</a></li>
+							<li><a href="#randomize"><span class="icon-loop"></span> Random!</a></li>
+							<li><a href="#plasma"><span class="icon-globe"></span> Plasma</a></li>
+							<li><a href="#planets"><span class="icon-globe"></span> Planets</a></li>
 						</ul>
 					</div>
 				</div>
 			</div>
 
-			<div id="UUUniverse" class="pure-u-1">
-				<div class="UniverseDisplay">
-					<h1>The Universal Universe</h1>
-					<canvas id="UUCanvasUniverse" width="800" height="800"></canvas>
+			<div id="UUMain" class="pure-u-1">
+				<div id="UUUniverse">
+					<h1 class="Title"><span class="icon-rocket"></span> The Universal Universe</h1>
+					<div id="UUUniverseRender">
+						<canvas id="UUCanvasUniverse" width="800" height="800"></canvas>
+					</div>
+					<div id="UUUniverseControls">
+						<a href="#backfast" id="btnGoFastBackward"><span class="icon-backward"></span></a>
+						<a href="#back" id="btnGoBackward"><span class="icon-play icon-rotate-180"></span></a>
+						<a href="#pause" id="btnGoPause"><span class="icon-pause"></span></a>
+						<a href="#forward" id="btnGoForward"><span class="icon-play"></span></a>
+						<a href="#forwardfast" id="btnGoFastForward"><span class="icon-forward"></span></a>
+						<p><span class="UUUniverseYears">0</span>y <span class="UUUniverseDays">0</span>d</p>
+					</div>
 				</div>
-			</div>
+				<div id="UUData" class="hidden">
+					<h1 class="Title"><span class="icon-bars"></span> Galaxy Specification Data</h1>
+				</div>
+				<div id="UULog" class="hidden">
+					<h1 class="Title"><span class="icon-wrench"></span> Galactic Event Log</h1>
+				</div>
 		</div>
 		<script>
-			// Setting the active class name expands the menu vertically on mobile screens.
+			// Make the menu button toggle the menu visibility.
+			// This only happens in responsive small mode.
 			$('#MenuToggle').on
 			(
 				'click',
-				function (e)
+				function ()
 				{
 					$('#UUNavigation').toggleClass('active');
 					$(this).toggleClass('pure-button-active');
 				}
 			);
+
+			// When clicking on a play next/previous control, make it the highlighted one and clear all previous highlights.
+			$('#UUUniverseControls a').on
+			(
+				'click',
+				function ()
+				{
+					$('#UUUniverseControls a').removeClass('active');
+					$(this).toggleClass('active');
+				}
+			);
+
+			// When clicking on a tab, make it the highlighted one and clear all previous highlights.
+			$('.UUNavigationMenu a').on
+			(
+				'click',
+				function ()
+				{
+					// Set the right active menu item
+					$('.UUNavigationMenu a').removeClass('active');
+					$(this).toggleClass('active');
+					// Show the right tab
+					var tmpTab = $(this).attr('data-tab');
+					if (typeof(tmpTab) != 'undefined')
+					{
+						$('#UUMain').children().addClass('hidden');
+						$('#'+tmpTab).removeClass('hidden');
+					}
+				}
+			);
+
 		</script>
 	</body>
 </html>

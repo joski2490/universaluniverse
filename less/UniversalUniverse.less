@@ -10,16 +10,19 @@
 */
 
 /* Le colors */
-@brown:   #3B351F;
-@green:   #274540;
-@teal:    #00DFFF;
-@orange:  #B86B00;
-@mustard: #C9A314;
+@brown:       #3B351F;
+@green:       #274540;
+@brightgreen: #12D62F;
+@teal:        #00DFFF;
+@red:         #FF4F00;
+@orange:      #B86B00;
+@mustard:     #C9A314;
 
-@black:   #000000;
-@slate:   #181818;
-@night:   #333333;
-@gray:    #aaaaaa;
+@black:       #000000;
+@slate:       #181818;
+@night:       #333333;
+@gray:        #aaaaaa;
+@lightgray:   #dedede;
 
 /* Column Widths */
 @UUNavigationWidth: 130px;
@@ -67,7 +70,15 @@ h1
 	font-family: 'heavy_dataregular', Arial, sans-serif;
 	background-color: @teal;
 	color: @black;
-	padding-left: 4px;
+	padding-left: 5px;
+	padding-right: 5px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	&.Title
+	{
+		/* We've gotta make ROOM FOR THE ROCKET... */
+		padding-top: 4px;
+	}
 }
 
 #UUCanvasUniverse
@@ -108,8 +119,8 @@ h1
 	}
 
 	/* On mobile hide the nav until the "Menu" button is clicked */
-	.nav-inner { display: none; }
-	&.active .nav-inner
+	.UUNavigationMenu { display: none; }
+	&.active .UUNavigationMenu
 	{
 		display: block;
 		padding: 2em 0;
@@ -131,18 +142,35 @@ h1
 		background: @orange;
 		color: @slate;
 		font-weight: bold;
+		span
+		{
+			color: @night;
+		}
 	}
 	.pure-menu a
 	{
 		color: @mustard;
 		font-family: 'special_eliteregular', Courier, sans-serif;
+		padding-top: 8px;
+		margin-top: 0px;
+		-moz-border-radius: 3px;
+		border-radius: 3px;
+		span
+		{
+			color: transparent;
+		}
 		&.active
 		{
 			background-color: @teal;
-			border-top: solid 4px @teal;
-			border-bottom: solid 4px @teal;
+			border-top: solid 3px @teal;
+			border-bottom: solid 3px @teal;
 			color: @slate;
 			font-weight: bold;
+			padding-top: 7px;
+			span
+			{
+				color: @slate;
+			}
 		}
 	}
 	.pure-menu-heading
@@ -154,13 +182,62 @@ h1
 	}
 }
 
-#UUUniverse
+#UUMain
 {
 	background-color: @UUUniverseBG;
 	padding-left: 10px;
 	padding-right: 10px;
 	width: 100%;
+}
+
+#UUUniverseRender
+{
 	overflow: scroll;
+}
+
+#UUUniverseControls
+{
+	padding-top: 2px;
+
+	a
+	{
+		color: @black;
+		background-color: @gray;
+		text-decoration: none;
+		border: 1px solid @lightgray;
+		border-radius: 3px;
+		padding-top: 4px;
+		padding-right: 3px;
+		padding-bottom: 0px;
+		padding-left: 3px;
+		&:hover
+		{
+			background-color: @mustard;
+		}
+
+		&.active
+		{
+			background-color: @brightgreen;
+			border-color: white;
+		}
+
+		&#btnGoPause.active
+		{
+			background-color: @red;
+		}
+	}
+
+	p
+	{
+		display: inline;
+		color: @gray;
+		font-family: 'special_eliteregular', Courier, sans-serif;
+
+		span
+		{
+			color: @mustard;
+		}
+	}
 }
 
 
@@ -178,7 +255,7 @@ h1
 	}
 
 	/* These elements are in the left padding on large displays */
-	#UUNavigation, #UUUniverse
+	#UUNavigation, #UUMain
 	{
 		position: fixed;
 		top: 0;
@@ -187,13 +264,13 @@ h1
 	}
 	#UUNavigation
 	{
-		margin-left: -@UUNavigationWidth; /* "left col (nav + list)" width */
+		margin-left: -@UUNavigationWidth;
 		width: @UUNavigationWidth;
 		height: 100%;
 
-		/* Show the menu items on the larger screen and hide the menu button */
+		/* Show the menu items on the larger display and hide the menu button */
 		.nav-menu-button { display: none; }
-		.nav-inner
+		.UUNavigationMenu
 		{
 			display: block;
 			padding: 2em 0;
@@ -202,10 +279,16 @@ h1
 		.pure-menu a
 		{
 			margin-left: 0.5em;
+			margin-top: 3px;
+			/* We change the radius stuff because the menu items are tabs in the bigger view */
+			-moz-border-radius-topright: 0px;
+			border-top-right-radius: 0px;
+			-moz-border-radius-bottomright: 0px;
+			border-bottom-right-radius: 0px;
 		}
 	}
 
-	#UUUniverse
+	#UUMain
 	{
 		position: fixed;
 		right: 0;
@@ -217,4 +300,58 @@ h1
 		overflow: auto;
 		width: auto; /* so it isn't 100% */
 	}
+}
+
+.hidden
+{
+	display:none;
+}
+
+/* Taken from font-awesome */
+/* Icon rotations and mirroring */
+.icon-rotate-90:before {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+}
+.icon-rotate-180:before {
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+  transform: rotate(180deg);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+}
+.icon-rotate-270:before {
+  -webkit-transform: rotate(270deg);
+  -moz-transform: rotate(270deg);
+  -ms-transform: rotate(270deg);
+  -o-transform: rotate(270deg);
+  transform: rotate(270deg);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+.icon-flip-horizontal:before {
+  -webkit-transform: scale(-1, 1);
+  -moz-transform: scale(-1, 1);
+  -ms-transform: scale(-1, 1);
+  -o-transform: scale(-1, 1);
+  transform: scale(-1, 1);
+}
+.icon-flip-vertical:before {
+  -webkit-transform: scale(1, -1);
+  -moz-transform: scale(1, -1);
+  -ms-transform: scale(1, -1);
+  -o-transform: scale(1, -1);
+  transform: scale(1, -1);
+}
+/* ensure rotation occurs inside anchor tags */
+a .icon-rotate-90:before,
+a .icon-rotate-180:before,
+a .icon-rotate-270:before,
+a .icon-flip-horizontal:before,
+a .icon-flip-vertical:before {
+  display: inline-block;
 }

@@ -15,96 +15,175 @@ define
 	['UniversalUniverse', 'OrbitalSolver-Circular'],
 	function(UniversalUniverse)
 	{
-		// This should move to the universe object...
-		var _UniversalTime = 0;
-
-		function initializeRenderer()
+		function oNew()
 		{
-			// TODO: Split this up into Graphics Context management, Universe Generation and Renderer setup.
-			var tmpCanvas = oCanvas.create({ canvas: "#UUCanvasUniverse", background: "#000" });
-			var tmpXOrigin = tmpCanvas.width / 2;
-			var tmpYOrigin = tmpCanvas.height / 2;
+			var _CanvasElement = '#UUCanvasUniverse';
+			var _CanvasBackground = '#000';
+			var _Canvas = false;
 
-			////////// Create a single sun for now in our universe.  They don't have orbits anyway. //////////
-			// Sun protoype object
-			UniversalUniverse.AddSun();
-			UniversalUniverse.Suns[0].Radius = 30;
-			UniversalUniverse.Suns[0].OrbitalSolver.OrbitalCenterX = tmpXOrigin;
-			UniversalUniverse.Suns[0].OrbitalSolver.OrbitalCenterY = tmpYOrigin;
-			var tmpSunLocation = UniversalUniverse.Suns[0].OrbitalSolver.ComputeLocation(UniversalUniverse.Time);
-			UniversalUniverse.Suns[0].Renderable = tmpCanvas.display.ellipse
-			({
-				x: tmpSunLocation.X,
-				y: tmpSunLocation.Y,
-				radius: UniversalUniverse.Suns[0].Radius,
-				fill: "#f00"
-			}).add();
+			var _XOrigin = 0;
+			var _YOrigin = 0;
 
-			////////// Create some random planets in random places. //////////
-			// Minimum of 1 and maximum of 8 planets.
-			var tmpPlanetCount = Math.floor((Math.random()*8)+1);
-			//console.log('There are '+ tmpPlanetCount +' planets.');
-			// We are abusing the origin, knowing it's the midpoint
-			var tmpPlanetSpacing = tmpXOrigin / (tmpPlanetCount + 1);
-			//console.log('The planets are '+ tmpPlanetSpacing +' units apart.');
+			var _Universe = UniversalUniverse;
 
-			// For the janky color generation until the POV images are integrated...
-			var tmpColors = Array("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f");
-			// Create each planet
-			for (var i = 0; i < tmpPlanetCount; i++)
+			var _TimeShift = 0;
+
+			////////// Configure the Canvas Element //////////
+			function initializeCanvas()
 			{
-				UniversalUniverse.AddPlanet();
-				UniversalUniverse.Planets[i].X = (i + 1) * tmpPlanetSpacing;
-				//console.log('Planet ' + i + ' Initial X: ' + UniversalUniverse.Planets[i].X );
-				UniversalUniverse.Planets[i].Radius = Math.random()*12+7;
-				//console.log('Planet ' + i + ' Object Radius: ' + UniversalUniverse.Planets[i].X );
-				// Set the orbital solver to be circular
-				UniversalUniverse.Planets[i].OrbitalSolver = require('OrbitalSolver-Circular').New();
-				UniversalUniverse.Planets[i].OrbitalSolver.OrbitalCenterX = tmpXOrigin;
-				UniversalUniverse.Planets[i].OrbitalSolver.OrbitalCenterY = tmpYOrigin;
-				UniversalUniverse.Planets[i].OrbitalSolver.Radius = UniversalUniverse.Planets[i].X;
-				UniversalUniverse.Planets[i].OrbitalSolver.OrbitalVelocity = Math.random() * 0.1;
-				var tmpLocation = UniversalUniverse.Planets[i].OrbitalSolver.ComputeLocation(_UniversalTime);
-				//console.log('Planet ' + i + ' Orbital Velocity: ' + UniversalUniverse.Planets[i].OrbitalSolver.OrbitalVelocity );
-				UniversalUniverse.Planets[i].Renderable = tmpCanvas.display.ellipse
-				({
-					x: tmpLocation.X,
-					y: tmpLocation.Y,
-					radius: UniversalUniverse.Planets[i].Radius,
-					fill: '#'+tmpColors[Math.floor((Math.random()*17))]+tmpColors[Math.floor((Math.random()*17))]+tmpColors[Math.floor((Math.random()*17))]
-				}).add();
+				_Canvas = oCanvas.create({ canvas: _CanvasElement, background: _CanvasBackground });
+				updateCanvasDimensions();
 			}
 
-			// Setup the animation loop and action to start/pause
-			tmpCanvas.bind
-			(
-				'click tap',
-				function ()
-				{
-					tmpCanvas.timeline[tmpCanvas.timeline.running ? "stop" : "start"]();
-				}
-			);
-			tmpCanvas.setLoop
-			(
-				function ()
-				{
-					UniversalUniverse.Time++;
+			////////// Setup the Canvas Dimensions //////////
+			function updateCanvasDimensions()
+			{
+				_XOrigin = _Canvas.width / 2;
+				_YOrigin = _Canvas.height / 2;
+				updateUniverseOrbits();
+			}
 
-					for (var i = 0; i < UniversalUniverse.Planets.length; i++)
-					{
-						tmpLocation = UniversalUniverse.Planets[i].OrbitalSolver.ComputeLocation(UniversalUniverse.Time);
-						UniversalUniverse.Planets[i].Renderable.moveTo(tmpLocation.X, tmpLocation.Y);
-					}
+			////////// Cascade Rendering State to Rendering Solvers //////////
+			function updateUniverseOrbits()
+			{
+				// Move the midpoints for the orbital solvers on Suns
+				for (var i = 0; i < _Universe.Suns.length; i++)
+				{
+					_Universe.Suns[i].OrbitalSolver.OrbitalCenterX = _XOrigin;
+					_Universe.Suns[i].OrbitalSolver.OrbitalCenterY = _YOrigin;
 				}
-			);
+				// Move the midpoints for the orbital solvers on Planets
+				for (var j = 0; j < _Universe.Planets.length; j++)
+				{
+					_Universe.Planets[j].OrbitalSolver.OrbitalCenterX = _XOrigin;
+					_Universe.Planets[j].OrbitalSolver.OrbitalCenterY = _YOrigin;
+				}
+
+				updateBodyLocations();
+			}
+
+			////////// Update the Universal Time //////////
+			function updateUniverseTime()
+			{
+				if (_TimeShift === 0) return;
+
+				_Universe.Time += _TimeShift;
+
+				updateBodyLocations();
+			}
+
+			////////// Update the Locations of Celestial Bodies //////////
+			function updateBodyLocations()
+			{
+				// Move the midpoints for the orbital solvers on Suns
+				for (var i = 0; i < _Universe.Suns.length; i++)
+				{
+					var tmpSunLocation = _Universe.Suns[i].OrbitalSolver.ComputeLocation(_Universe.Time);
+					_Universe.Suns[i].Renderable.moveTo(tmpSunLocation.X, tmpSunLocation.Y);
+				}
+				// Move the midpoints for the orbital solvers on Planets
+				for (var j = 0; j < _Universe.Planets.length; j++)
+				{
+					var tmpLocation = _Universe.Planets[j].OrbitalSolver.ComputeLocation(_Universe.Time);
+					_Universe.Planets[j].Renderable.moveTo(tmpLocation.X, tmpLocation.Y);
+				}
+
+				// Now update the text.
+				$('.UUUniverseYears').text(_Universe.TimeCurrentYear);
+				$('.UUUniverseDays').text(_Universe.TimeCurrentDay.toFixed(2));
+			}
+
+			////////// Initialize the Renderer and generate the universe //////////
+			function initializeRenderer()
+			{
+				initializeCanvas();
+
+				////////// Create a single sun for now in our universe.  They don't have orbits yet anyway. //////////
+				_Universe.AddSun();
+				_Universe.Suns[0].Radius = 30;
+				_Universe.Suns[0].Renderable = _Canvas.display.ellipse
+				({
+					radius: _Universe.Suns[0].Radius,
+					fill: "#f13"
+				}).add();
+
+				////////// Create some random planets in random places. //////////
+				// Minimum of 1 and maximum of 8 planets.
+				var tmpPlanetCount = Math.floor((Math.random()*8)+1);
+				//console.log('There are '+ tmpPlanetCount +' planets.');
+				// We are abusing the origin, knowing it's the midpoint
+				var tmpPlanetSpacing = _XOrigin / (tmpPlanetCount + 1);
+				//console.log('The planets are '+ tmpPlanetSpacing +' units apart.');
+
+				// For the janky color generation until the POV images are integrated...
+				var tmpColors = Array("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f");
+				// Create each planet
+				for (var i = 0; i < tmpPlanetCount; i++)
+				{
+					_Universe.AddPlanet();
+					_Universe.Planets[i].X = (i + 1) * tmpPlanetSpacing;
+					//console.log('Planet ' + i + ' Initial X: ' + _Universe.Planets[i].X );
+					_Universe.Planets[i].Radius = Math.random()*12+7;
+					//console.log('Planet ' + i + ' Object Radius: ' + _Universe.Planets[i].X );
+					// Set the orbital solver to be circular
+					_Universe.Planets[i].OrbitalSolver = require('OrbitalSolver-Circular').New();
+					_Universe.Planets[i].OrbitalSolver.Radius = _Universe.Planets[i].X;
+					_Universe.Planets[i].OrbitalSolver.OrbitalVelocity = Math.random() * 0.1;
+					//console.log('Planet ' + i + ' Orbital Velocity: ' + _Universe.Planets[i].OrbitalSolver.OrbitalVelocity );
+					_Universe.Planets[i].Renderable = _Canvas.display.ellipse
+					({
+						radius: _Universe.Planets[i].Radius,
+						fill: '#'+tmpColors[Math.floor((Math.random()*17))]+tmpColors[Math.floor((Math.random()*17))]+tmpColors[Math.floor((Math.random()*17))]
+					}).add();
+				}
+
+				// Now update the orbital centers and ultimately locations for frame 1
+				updateUniverseOrbits();
+//				_Canvas.redraw();
+
+				_Canvas.setLoop
+				(
+					function ()
+					{
+						updateUniverseTime();
+					}
+				);
+
+				// Now start the canvas timeline running (with a timeshift of 0)
+				_Canvas.timeline.start();
+			}
+
+			////////// Return Object //////////
+			var oSceneRenderer = (
+			{
+				New: oNew,
+				InitializeRenderer: initializeRenderer,
+				UpdateCanvasDimensions: updateCanvasDimensions,
+				UpdateUniverseOrbits: updateUniverseOrbits,
+				UpdateBodyLocations: updateBodyLocations
+			});
+
+			// This is the amount of change each tick that the universe gets.
+			// Hard coded above to 30 ticks per second at the moment.
+			Object.defineProperty(oSceneRenderer, 'TimeShift',
+			{
+				get: function() { return _TimeShift; },
+				set: function(pTimeShift)
+						{
+							_TimeShift = pTimeShift;
+							console.log('Timeshift set to '+_TimeShift);
+						}
+			});
+
+			Object.defineProperty(oSceneRenderer, 'Time',
+			{
+				get: function() { return _Universe.Time; },
+				set: function(pTime) { _Universe.Time = pTime; }
+			});
+
+			return oSceneRenderer;
 		}
 
-		////////// Return Object //////////
-		var oSceneRenderer = (
-		{
-			InitializeRenderer: initializeRenderer
-		});
-
-		return oSceneRenderer;
+		return oNew();
 	}
 );
