@@ -59,7 +59,8 @@ Path.Dependencies.Output =
 		underscore: 'js/underscore.js',
 		pure: 'css/pure.css',
 		jquery: 'js/jquery.js',
-		backbone: 'js/backbone.js'
+		backbone: 'js/backbone.js',
+		moment: '../scripts/moment.js' // Hacky?  Maybe.  Moment is a requirejs compatible dependency though!
 	}
 Path.Dependencies.Input =
 	{
@@ -68,7 +69,8 @@ Path.Dependencies.Input =
 		underscore: Path.Dependencies.Source + 'underscore/underscore-min.js',
 		pure: Path.Dependencies.Source + 'pure/pure-min.css',
 		jquery: Path.Dependencies.Source + 'jquery/jquery-2.1.0.min.js',
-		backbone: Path.Dependencies.Source + 'backbone/backbone-min.js'
+		backbone: Path.Dependencies.Source + 'backbone/backbone-min.js',
+		moment: Path.Dependencies.Source + 'moment/moment-with-langs.min.js'
 	}
 Path.Dependencies.InputDebug =
 	{
@@ -77,7 +79,8 @@ Path.Dependencies.InputDebug =
 		underscore: Path.Dependencies.Source + 'underscore/underscore.js',
 		pure: Path.Dependencies.Source + 'pure/pure.css',
 		jquery: Path.Dependencies.Source + 'jquery/jquery-2.1.0.js',
-		backbone: Path.Dependencies.Source + 'backbone/backbone.js'
+		backbone: Path.Dependencies.Source + 'backbone/backbone.js',
+		moment: Path.Dependencies.Source + 'moment/moment-with-langs.js'
 	}
 Path.Site =
 	{
@@ -116,7 +119,7 @@ Path.Assets.Input =
 
 
 ////////////////////////////////////////////////////////////////////
-//////////////////////// Run the Application ////////////////////////
+//////////////////////// Run the Application ///////////////////////
 //================================================================//
 
 /********************************************************

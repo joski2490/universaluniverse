@@ -104,7 +104,7 @@ define
 				_Universe.Suns[0].Renderable = _Canvas.display.ellipse
 				({
 					radius: _Universe.Suns[0].Radius,
-					fill: "#f13"
+					fill: "#ff9903"
 				}).add();
 
 				////////// Create some random planets in random places. //////////
@@ -139,8 +139,8 @@ define
 
 				// Now update the orbital centers and ultimately locations for frame 1
 				updateUniverseOrbits();
-//				_Canvas.redraw();
 
+				// Set the render loop to update the time our model thinks it is.
 				_Canvas.setLoop
 				(
 					function ()
@@ -149,7 +149,7 @@ define
 					}
 				);
 
-				// Now start the canvas timeline running (with a timeshift of 0)
+				// Now start the canvas timeline running (with a timeshift of 0 initially)
 				_Canvas.timeline.start();
 			}
 
