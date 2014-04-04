@@ -21,6 +21,8 @@
 		<script type="text/javascript" src="dependencies/js/backbone.js"></script>
 		<script type="text/javascript" src="dependencies/js/ocanvas.js"></script>
 
+		<script src="http://localhost:35729/livereload.js?snipver=1"></script>
+
 		<script type="text/javascript" data-main="scripts/Application" src="dependencies/js/require.js"></script>
 	</head>
 	<body>
@@ -66,9 +68,7 @@
 					<div id="LogEntries"></div>
 				</div>
 		</div>
-		<script>
-			// Make the menu button toggle the menu visibility.
-			// This only happens in responsive small mode.
+		<script type="text/javascript">
 			$('#MenuToggle').on
 			(
 				'click',
@@ -108,7 +108,7 @@
 					}
 				}
 			);
-
 		</script>
+		<script type="text/html" id="LogEntryTemplate"><p><span><%= Message.Time %></span><%= Message.Body %></p></script>
 	</body>
 </html>

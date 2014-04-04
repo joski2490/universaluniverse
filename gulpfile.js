@@ -335,7 +335,7 @@ Gulp.task
 	{
 		var Template = require('gulp-template');
 		Gulp.src(Path.Site.Source)
-			.pipe(Template({ Debug: false }))
+//			.pipe(Template({ Debug: false }))
 			.pipe(Gulp.dest(Path.Site.Destination));
 	}
 );
@@ -350,7 +350,8 @@ Gulp.task
 	{
 		var Template = require('gulp-template');
 		Gulp.src(Path.Site.Source)
-			.pipe(Template({ Debug: true }))
+// Removed the lodash templates as part of the build process because they screwed with underscore templates in index.html
+//			.pipe(Template({ Debug: true }))
 			.pipe(Gulp.dest(Path.Site.Destination));
 	}
 );
