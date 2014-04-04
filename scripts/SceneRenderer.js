@@ -12,8 +12,8 @@ if (typeof define !== 'function') { var define = require('amdefine')(module); }
 
 define
 (
-	['SceneConsole', 'UniversalUniverse', 'OrbitalSolver-Circular'],
-	function(SceneConsole, UniversalUniverse)
+	['UniversalUniverse', 'OrbitalSolver-Circular'],
+	function(UniversalUniverse)
 	{
 		function oNew()
 		{
@@ -27,8 +27,6 @@ define
 			var _Universe = UniversalUniverse;
 
 			var _TimeShift = 0;
-
-			var _SceneConsole = SceneConsole;
 
 			////////// Configure the Canvas Element //////////
 			function initializeCanvas()
@@ -106,12 +104,12 @@ define
 				_Universe.Suns[0].Renderable = _Canvas.display.ellipse
 				({
 					radius: _Universe.Suns[0].Radius,
-					fill: "#ff9903"
+					fill: "#f13"
 				}).add();
 
 				////////// Create some random planets in random places. //////////
 				// Minimum of 1 and maximum of 8 planets.
-				var tmpPlanetCount = Math.floor((Math.random()*888)+1);
+				var tmpPlanetCount = Math.floor((Math.random()*8)+1);
 				//console.log('There are '+ tmpPlanetCount +' planets.');
 				// We are abusing the origin, knowing it's the midpoint
 				var tmpPlanetSpacing = _XOrigin / (tmpPlanetCount + 1);
@@ -141,8 +139,8 @@ define
 
 				// Now update the orbital centers and ultimately locations for frame 1
 				updateUniverseOrbits();
+//				_Canvas.redraw();
 
-				// Set the render loop to update the time our model thinks it is.
 				_Canvas.setLoop
 				(
 					function ()
@@ -151,7 +149,7 @@ define
 					}
 				);
 
-				// Now start the canvas timeline running (with a timeshift of 0 initially)
+				// Now start the canvas timeline running (with a timeshift of 0)
 				_Canvas.timeline.start();
 			}
 
@@ -173,7 +171,7 @@ define
 				set: function(pTimeShift)
 						{
 							_TimeShift = pTimeShift;
-							_SceneConsole.WriteLog('Timeshift set to '+_TimeShift, 0);
+							console.log('Timeshift set to '+_TimeShift);
 						}
 			});
 
@@ -181,11 +179,6 @@ define
 			{
 				get: function() { return _Universe.Time; },
 				set: function(pTime) { _Universe.Time = pTime; }
-			});
-
-			Object.defineProperty(oSceneRenderer, 'SceneConsole',
-			{
-				get: function() { return _SceneConsole; }
 			});
 
 			return oSceneRenderer;

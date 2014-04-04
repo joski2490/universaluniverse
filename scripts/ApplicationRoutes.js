@@ -17,7 +17,7 @@ define
 		var _Router;
 		var _RouterPrototype;
 
-		var _TimeShift = 0.01;
+		var _TimeShift = 0.1;
 		var _TimeShiftFast = 1.0;
 		var _TimeShiftStep = 1.0;
 

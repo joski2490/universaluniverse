@@ -59,8 +59,7 @@ Path.Dependencies.Output =
 		underscore: 'js/underscore.js',
 		pure: 'css/pure.css',
 		jquery: 'js/jquery.js',
-		backbone: 'js/backbone.js',
-		moment: '../scripts/moment.js' // Hacky?  Maybe.  Moment is a requirejs compatible dependency though!
+		backbone: 'js/backbone.js'
 	}
 Path.Dependencies.Input =
 	{
@@ -69,8 +68,7 @@ Path.Dependencies.Input =
 		underscore: Path.Dependencies.Source + 'underscore/underscore-min.js',
 		pure: Path.Dependencies.Source + 'pure/pure-min.css',
 		jquery: Path.Dependencies.Source + 'jquery/jquery-2.1.0.min.js',
-		backbone: Path.Dependencies.Source + 'backbone/backbone-min.js',
-		moment: Path.Dependencies.Source + 'moment/moment-with-langs.min.js'
+		backbone: Path.Dependencies.Source + 'backbone/backbone-min.js'
 	}
 Path.Dependencies.InputDebug =
 	{
@@ -79,8 +77,7 @@ Path.Dependencies.InputDebug =
 		underscore: Path.Dependencies.Source + 'underscore/underscore.js',
 		pure: Path.Dependencies.Source + 'pure/pure.css',
 		jquery: Path.Dependencies.Source + 'jquery/jquery-2.1.0.js',
-		backbone: Path.Dependencies.Source + 'backbone/backbone.js',
-		moment: Path.Dependencies.Source + 'moment/moment-with-langs.js'
+		backbone: Path.Dependencies.Source + 'backbone/backbone.js'
 	}
 Path.Site =
 	{
@@ -119,7 +116,7 @@ Path.Assets.Input =
 
 
 ////////////////////////////////////////////////////////////////////
-//////////////////////// Run the Application ///////////////////////
+//////////////////////// Run the Application ////////////////////////
 //================================================================//
 
 /********************************************************
@@ -335,7 +332,7 @@ Gulp.task
 	{
 		var Template = require('gulp-template');
 		Gulp.src(Path.Site.Source)
-//			.pipe(Template({ Debug: false }))
+			.pipe(Template({ Debug: false }))
 			.pipe(Gulp.dest(Path.Site.Destination));
 	}
 );
@@ -350,8 +347,7 @@ Gulp.task
 	{
 		var Template = require('gulp-template');
 		Gulp.src(Path.Site.Source)
-// Removed the lodash templates as part of the build process because they screwed with underscore templates in index.html
-//			.pipe(Template({ Debug: true }))
+			.pipe(Template({ Debug: true }))
 			.pipe(Gulp.dest(Path.Site.Destination));
 	}
 );
