@@ -4,6 +4,10 @@ Copyright (c) 2014 Steven Velozo
 
 The Universal Universe Simulator is an environment for modeling celestial bodies with gravity, mass, weight and other physical properties.  This is not meant to be a perfect or accurate simulation of rotation and gravity, but instead a playground to build systems that are usable within the context of computer games.
 
+It also provided a fun framework for setting up a site using node tools and gulp, including livereload and complex compilation scripts.
+
+![Universal Universe Site](https://github.com/stevenvelozo/universaluniverse/raw/master/screenshots/UU.png)
+
 ## Setting Things Up
 New to node?  Check out this repository, download node.js and go to this folder.  Type the following command:
 ```$ npm install```
@@ -21,6 +25,12 @@ If you wish to get fancy about where it serves from, you can run:
 ```$ node UniversalUniverseSimulator.js -p 6000```
 
 Which will serve a page at http://localhost:6000/ for your viewing pleasure.  If you click on the universe box, the planets even spin!  Reload for more random universes.
+
+## Logging and Hacking
+
+There is a real-time back-end and front-end log system, so anything the simulator does can easily write entries to a rolling log display on a tab in the web page.  These entries can also be written to files or other appenders, if you like that sort of thing.
+
+![Universal Universe Log](https://github.com/stevenvelozo/universaluniverse/raw/master/screenshots/UU-Log.png)
 
 ## Unit Testing
 
