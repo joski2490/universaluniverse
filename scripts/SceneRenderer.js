@@ -110,8 +110,8 @@ define
 				}).add();
 
 				////////// Create some random planets in random places. //////////
-				// Minimum of 1 and maximum of 8 planets.
-				var tmpPlanetCount = Math.floor((Math.random()*888)+1);
+				// Minimum of 1 and maximum of 10 planets.
+				var tmpPlanetCount = Math.floor((Math.random()*10)+1);
 				//console.log('There are '+ tmpPlanetCount +' planets.');
 				// We are abusing the origin, knowing it's the midpoint
 				var tmpPlanetSpacing = _XOrigin / (tmpPlanetCount + 1);
